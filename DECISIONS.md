@@ -37,3 +37,9 @@ Capital lands on the risk-adjusted-right projects; and the decision — *includi
 - **Persistence:** SQLite default; no models yet (single-analyst demo). Postgres remains optional later.
 - **Dependencies:** single `pyproject.toml` (PEP 621), dev extras (`pytest`, `pytest-django`, `ruff`) under `[project.optional-dependencies]`. Static served by **whitenoise**; container runs **gunicorn**.
 - **Acceptance met:** `pytest` green (home page serves 200 + disclaimer present); `ruff` clean; `docker compose up` serves the page under gunicorn.
+
+### M1 — finance core (recorded as built)
+- **Module:** `engine/finance/metrics.py` — pure functions, built test-first (`tests/test_metrics.py`, 20 cases): `npv`, `irr`, `irr_candidates`, `payback`, `discounted_payback`, `profitability_index`, `mirr`.
+- **Convention:** `cashflows[0]` is the t=0 outlay (negative); `cashflows[i]` lands at end of period `i`.
+- **IRR edge cases (the known trap).** `irr` is solved as the polynomial roots of `Σ cf_t·x^t = 0` with `x = 1/(1+r)`, keeping real roots with `x > 0` (i.e. rate > −100%). It returns **`None` when there is no real IRR or more than one** (non-conventional flows) rather than picking an arbitrary root. `irr_candidates` exposes every real root so the ambiguity is visible, and **`mirr` is the robust single-valued alternative** (positive flows compounded at the reinvest rate, negatives discounted at the finance rate). This is the "multiple-IRR / no-IRR confusion" mitigation from `PLAN.md`'s risk register — handled in code, surfaced via MIRR.
+- **Invariants encoded as tests:** PI > 1 ⟺ NPV > 0; discounted payback ≥ simple payback; IRR makes NPV ≈ 0; MIRR is finite where IRR is undefined.
