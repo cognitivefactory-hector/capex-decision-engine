@@ -18,8 +18,11 @@
     <li>A grounded, human-edited investment memo &mdash; the optimizer decides, the LLM only explains.</li>
   </ul>
 
-  <p>
-    Status: <strong>scaffolded</strong> (M0). The Projects, Risk, and Portfolio tabs come online
-    as the build follows <code>PLAN.md</code> (M1&rarr;M9).
+  <p style="margin-top:24px">
+    <a href="{% url 'web:projects' %}"><button>Projects &amp; metrics</button></a>
+    <a href="{% url 'web:risk' %}" style="margin-left:8px"><button>Risk distributions</button></a>
+    <a href="{% url 'web:portfolio' %}" style="margin-left:8px"><button>Portfolio &amp; memo &rarr;</button></a>
   </p>
+  <p class="muted">Start on <strong>Portfolio</strong>: move the budget and risk-aversion sliders and
+    watch the funded set re-optimize &mdash; including the high-NPV project that gets cut.</p>
 {% endblock %}

@@ -1,0 +1,23 @@
+{% extends "web/base.html" %}
+
+{% block content %}
+  <h1>Risk</h1>
+  <p class="sub">Each project's uncertain inputs are Monte-Carlo'd <em>with correlation</em> into an
+    NPV distribution &mdash; not a single number. Red is the loss region (NPV&lt;0); the dashed line
+    is the CVaR downside tail. The tornado ranks which inputs actually move NPV.</p>
+
+  {% for f in figures %}
+  <div class="card">
+    <h2>{{ f.name }} <span class="muted" style="font-weight:400">&mdash; {{ f.kind }}</span></h2>
+    <p class="muted stat">
+      Mean NPV {{ f.metrics.mean|floatformat:0 }} &middot;
+      P(NPV&lt;0) {{ f.metrics.p_loss|floatformat:2 }} &middot;
+      CVaR <span class="{% if f.metrics.cvar < 0 %}neg{% endif %}">{{ f.metrics.cvar|floatformat:0 }}</span>
+    </p>
+    <div class="grid2">
+      <div>{{ f.distribution|safe }}</div>
+      <div>{{ f.tornado|safe }}</div>
+    </div>
+  </div>
+  {% endfor %}
+{% endblock %}

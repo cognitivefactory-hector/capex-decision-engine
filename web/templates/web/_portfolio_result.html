@@ -1,0 +1,81 @@
+<div class="card">
+  <p class="muted stat">
+    Total capital committed <strong>{{ portfolio.total_cost|floatformat:0 }}</strong>
+    of {{ budget|floatformat:0 }} &middot;
+    objective (E[NPV] &minus; &lambda;&middot;downside) {{ portfolio.objective|floatformat:0 }} &middot;
+    &lambda; = {{ lam }}
+  </p>
+
+  <div class="grid2">
+    <div>
+      <h2>Funded <span class="pill funded">{{ context.funded|length }}</span></h2>
+      <table>
+        <thead><tr><th>Project</th><th>Capital</th><th>E[NPV]</th><th>CVaR</th><th>Score</th></tr></thead>
+        <tbody>
+          {% for f in context.funded %}
+          <tr>
+            <td><strong>{{ f.name }}</strong><br><span class="muted">{{ f.kind }}</span></td>
+            <td class="stat">{{ f.cost|floatformat:0 }}</td>
+            <td class="stat">{{ f.expected_npv|floatformat:0 }}</td>
+            <td class="stat {% if f.cvar < 0 %}neg{% endif %}">{{ f.cvar|floatformat:0 }}</td>
+            <td class="stat">{{ f.score|floatformat:0 }}</td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="5" class="muted">Nothing funded at this budget.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <div>
+      <h2>Cut <span class="pill cut">{{ context.cut|length }}</span></h2>
+      <table>
+        <thead><tr><th>Project</th><th>Capital</th><th>E[NPV]</th><th>CVaR</th><th>Score</th></tr></thead>
+        <tbody>
+          {% for f in context.cut %}
+          <tr>
+            <td><strong>{{ f.name }}</strong><br><span class="muted">{{ f.kind }}</span></td>
+            <td class="stat">{{ f.cost|floatformat:0 }}</td>
+            <td class="stat">{{ f.expected_npv|floatformat:0 }}</td>
+            <td class="stat {% if f.cvar < 0 %}neg{% endif %}">{{ f.cvar|floatformat:0 }}</td>
+            <td class="stat">{{ f.score|floatformat:0 }}</td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="5" class="muted">Nothing cut &mdash; everything fits.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  {% if context.cut_high_npv %}
+  <div class="callout" style="margin-top:16px">
+    <strong>The project we cut:</strong> {{ context.cut_high_npv.name }} ({{ context.cut_high_npv.kind }})
+    had the <strong>highest expected NPV ({{ context.cut_high_npv.expected_npv|floatformat:0 }})</strong>
+    of any candidate &mdash; but a fat downside tail (CVaR
+    <span class="neg">{{ context.cut_high_npv.cvar|floatformat:0 }}</span>,
+    P(NPV&lt;0) {{ context.cut_high_npv.p_loss|floatformat:2 }}). We traded expected return for a
+    portfolio that survives a bad scenario.
+  </div>
+  {% endif %}
+</div>
+
+{% if comparison %}
+<div class="card">
+  <h2>The cut, on one screen</h2>
+  <p class="muted">Highest-NPV project we cut (left) vs. the steadiest project we funded (right).
+    The picture is the argument.</p>
+  {{ comparison|safe }}
+</div>
+{% endif %}
+
+<div class="card">
+  <h2>Investment memo</h2>
+  <p class="muted">The optimizer decided; the model only explains the decision, grounded in the numbers
+    above. You edit and sign.</p>
+  <button hx-post="{% url 'web:memo' %}" hx-target="#memo"
+          hx-include="[name='budget'],[name='lam']" hx-disabled-elt="this">
+    Generate memo
+  </button>
+  <span class="htmx-indicator muted" style="margin-left:10px">Generating&hellip;</span>
+  <div id="memo" style="margin-top:16px"></div>
+</div>

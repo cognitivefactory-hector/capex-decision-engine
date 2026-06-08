@@ -1,8 +1,4 @@
-"""URL routes for the web layer.
-
-The Projects / Risk / Portfolio tabs (SPEC §4.3) land in later milestones; M0
-serves only the landing page.
-"""
+"""URL routes for the web layer (SPEC §4.3: Projects / Risk / Portfolio)."""
 from django.urls import path
 
 from . import views
@@ -11,4 +7,9 @@ app_name = "web"
 
 urlpatterns = [
     path("", views.home, name="home"),
+    path("projects/", views.projects, name="projects"),
+    path("risk/", views.risk, name="risk"),
+    path("portfolio/", views.portfolio, name="portfolio"),
+    path("portfolio/optimize/", views.optimize, name="optimize"),
+    path("portfolio/memo/", views.memo, name="memo"),
 ]
