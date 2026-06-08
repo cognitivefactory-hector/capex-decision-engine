@@ -2,11 +2,16 @@
 via ``web.services``. The optimizer decides; the LLM only explains."""
 from __future__ import annotations
 
-from django.http import HttpRequest
+from django.http import HttpRequest, HttpResponse
 from django.shortcuts import render
 from django.views.decorators.http import require_POST
 
 from . import services
+
+
+def healthz(request):
+    """Liveness probe for the host (no heavy work — does not run the simulation)."""
+    return HttpResponse("ok", content_type="text/plain")
 
 
 def _budget_lambda(request: HttpRequest) -> tuple[float, float]:

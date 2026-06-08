@@ -85,6 +85,22 @@ STORAGES = {
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
+# --- Production hardening (only when DEBUG is off; safe for Render + Cloudflare) ---
+if not DEBUG:
+    # Render terminates TLS and forwards the original scheme in this header.
+    SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+    SECURE_SSL_REDIRECT = _env_bool("DJANGO_SECURE_SSL_REDIRECT", True)
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    SECURE_HSTS_SECONDS = int(os.environ.get("DJANGO_HSTS_SECONDS", "3600"))
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_CONTENT_TYPE_NOSNIFF = True
+    if SECRET_KEY == "dev-insecure-key-change-me-in-production":
+        raise RuntimeError(
+            "DJANGO_SECRET_KEY must be set when DJANGO_DEBUG is off — refusing to "
+            "run production with the insecure dev fallback."
+        )
+
 # --- Anthropic / memo layer (consumed at M6; the LLM explains, never decides) ---
 ANTHROPIC_API_KEY = os.environ.get("ANTHROPIC_API_KEY", "")
 # Grounded summarization of one portfolio per call: Sonnet is the cost/quality default.

@@ -14,6 +14,12 @@ def test_pages_serve(client):
         assert client.get(name).status_code == 200
 
 
+def test_healthz_is_ok(client):
+    resp = client.get("/healthz/")
+    assert resp.status_code == 200
+    assert resp.content == b"ok"
+
+
 def test_portfolio_page_shows_funded_and_cut(client):
     body = client.get("/portfolio/").content.decode()
     assert "Funded" in body
