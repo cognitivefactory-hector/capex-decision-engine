@@ -28,3 +28,12 @@ Capital lands on the risk-adjusted-right projects; and the decision — *includi
 - **Math first, test-first:** finance metrics (incl. multiple-IRR handling → MIRR), correlated Monte Carlo (Cholesky) → P(NPV<0) + CVaR, and a budget-constrained risk-adjusted optimizer. The "cut the high-NPV trap when λ is high" behavior is a passing test — the thesis, encoded.
 - **AI:** the LLM never decides — it drafts a memo *grounded in the computed numbers and the optimizer's choice*, which the human edits and signs.
 - **Host:** Render (Dockerized) behind Cloudflare. `ANTHROPIC_API_KEY` never committed.
+
+### M0 — scaffold (recorded as built)
+- **Framework:** Django 5.x on Python 3.12 (spec requires 3.11+). Chosen over FastAPI to match the portfolio's one-stack rule; server-rendered templates + HTMX (added at M7) keep the front end thin so the substance stays in the quant core.
+- **Layout:** three top-level packages — `config/` (Django project), `web/` (thin view layer + templates), and **`engine/`** (the quant core: `finance`, `montecarlo`, `sensitivity`, `optimizer`, `memo`, `data`). `engine/` imports no Django; keeping the math framework-free makes it trivially unit-testable and enforces the "crown jewels are pure" invariant. (This adapts the `app/` layout suggested in `PLAN.md` §"Suggested repo layout".)
+- **Memo model:** default **`claude-sonnet-4-6`** (via the `MEMO_MODEL` env var). The memo is one grounded-summarization call per portfolio — Sonnet's quality is ample for prose over already-computed numbers, at materially lower cost/latency than Opus. `claude-opus-4-8` stays available as a quality fallback by overriding the env var. (Revisit at M6 against real memo output.)
+- **Optimizer method:** plan to use **exhaustive search with a risk penalty** for the small project count (~5–8), not `scipy.optimize.milp`/`pulp`. With N this small the exhaustive set is tiny and every funded/cut choice is fully explainable — explainability beats cleverness for the whiteboard defense. (Implemented and tested at M4.)
+- **Persistence:** SQLite default; no models yet (single-analyst demo). Postgres remains optional later.
+- **Dependencies:** single `pyproject.toml` (PEP 621), dev extras (`pytest`, `pytest-django`, `ruff`) under `[project.optional-dependencies]`. Static served by **whitenoise**; container runs **gunicorn**.
+- **Acceptance met:** `pytest` green (home page serves 200 + disclaimer present); `ruff` clean; `docker compose up` serves the page under gunicorn.

@@ -24,7 +24,20 @@ Part of [hector-garza.com](https://hector-garza.com)'s portfolio. One of three e
 ## Deployment
 - **Live demo:** Dockerized Django app on **Render**, fronted by **Cloudflare** (planned subdomain `capex.hector-garza.com`).
 - `ANTHROPIC_API_KEY` lives in `.env` (gitignored) / host secrets — **never committed.**
-- Local run: one command via Docker (added in build step M0).
+
+### Local run
+```bash
+cp .env.example .env        # fill in ANTHROPIC_API_KEY for the memo (M6); not needed to serve
+docker compose up --build   # → http://localhost:8000
+```
+
+Or without Docker:
+```bash
+python -m venv .venv && . .venv/bin/activate
+pip install -e ".[dev]"
+python manage.py runserver  # → http://localhost:8000
+pytest                      # run the test suite
+```
 
 ## Links (filled in as the build progresses)
 - 🔗 Live demo: _TBD_
