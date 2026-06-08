@@ -1,0 +1,25 @@
+{% extends "web/base.html" %}
+
+{% block content %}
+  <h1>Capex Decision Engine</h1>
+  <p>
+    A risk-adjusted capital-allocation engine: it scores candidate plant capex projects on
+    NPV/IRR/payback, Monte-Carlos the uncertain inputs (with correlation) into a
+    <em>distribution</em> of outcomes, and picks the funded portfolio under a budget cap &mdash;
+    built to defend the high-ROI project you deliberately <strong>killed</strong>.
+  </p>
+
+  <h2>What it will do</h2>
+  <ul>
+    <li>Deterministic metrics per project: NPV, IRR, payback, profitability index, MIRR.</li>
+    <li>Correlated Monte Carlo &rarr; NPV distribution: mean, P(NPV&lt;0), CVaR downside tail.</li>
+    <li>Tornado / sensitivity &mdash; &ldquo;what would change my mind.&rdquo;</li>
+    <li>Risk-adjusted portfolio optimizer under a budget cap, honoring constraints.</li>
+    <li>A grounded, human-edited investment memo &mdash; the optimizer decides, the LLM only explains.</li>
+  </ul>
+
+  <p>
+    Status: <strong>scaffolded</strong> (M0). The Projects, Risk, and Portfolio tabs come online
+    as the build follows <code>PLAN.md</code> (M1&rarr;M9).
+  </p>
+{% endblock %}

@@ -1,0 +1,14 @@
+services:
+  web:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      DJANGO_DEBUG: "${DJANGO_DEBUG:-False}"
+      DJANGO_SECRET_KEY: "${DJANGO_SECRET_KEY:-dev-insecure-key-change-me}"
+      DJANGO_ALLOWED_HOSTS: "${DJANGO_ALLOWED_HOSTS:-localhost,127.0.0.1,0.0.0.0}"
+      # Memo layer (M6). Never bake the key into the image — pass it from .env.
+      ANTHROPIC_API_KEY: "${ANTHROPIC_API_KEY:-}"
+      MEMO_MODEL: "${MEMO_MODEL:-claude-sonnet-4-6}"
+    env_file:
+      - .env

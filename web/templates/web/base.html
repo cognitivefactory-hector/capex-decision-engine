@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Capex Decision Engine{% endblock %}</title>
+  <style>
+    :root { --ink:#13171f; --muted:#5b6472; --line:#e3e7ee; --accent:#1f6feb; --bg:#f7f9fc; }
+    * { box-sizing: border-box; }
+    body { margin:0; font:16px/1.6 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+           color:var(--ink); background:var(--bg); }
+    header { border-bottom:1px solid var(--line); background:#fff; }
+    .wrap { max-width:880px; margin:0 auto; padding:0 24px; }
+    nav { display:flex; gap:24px; align-items:center; height:60px; }
+    nav .brand { font-weight:700; }
+    nav a { color:var(--muted); text-decoration:none; }
+    nav a.disabled { opacity:.5; cursor:not-allowed; }
+    main { padding:40px 0; }
+    footer { border-top:1px solid var(--line); color:var(--muted); font-size:13px;
+             padding:24px 0; background:#fff; }
+    .disclaimer { font-style:italic; }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap">
+      <nav>
+        <span class="brand">Capex Decision Engine</span>
+        <a href="{% url 'web:home' %}">Home</a>
+        <a class="disabled" title="Coming soon">Projects</a>
+        <a class="disabled" title="Coming soon">Risk</a>
+        <a class="disabled" title="Coming soon">Portfolio</a>
+      </nav>
+    </div>
+  </header>
+  <main>
+    <div class="wrap">
+      {% block content %}{% endblock %}
+    </div>
+  </main>
+  <footer>
+    <div class="wrap">
+      <p class="disclaimer">
+        Illustrative capital-budgeting analysis on synthetic projects &mdash;
+        not investment advice. No securities recommendations, no real company financials.
+      </p>
+    </div>
+  </footer>
+</body>
+</html>

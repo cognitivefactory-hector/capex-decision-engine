@@ -1,0 +1,42 @@
+[project]
+name = "capex-decision-engine"
+version = "0.1.0"
+description = "Risk-adjusted capital-allocation engine: scores capex projects, Monte-Carlos correlated inputs into NPV distributions, and optimizes a funded portfolio under a budget cap."
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+authors = [{ name = "Hector Garza", email = "hectorg@smartxchain.com" }]
+
+dependencies = [
+    "django>=5.0,<6.0",
+    "numpy>=1.26",
+    "scipy>=1.11",
+    "pandas>=2.1",
+    "plotly>=5.18",
+    "anthropic>=0.40",
+    "gunicorn>=21.2",
+    "whitenoise>=6.6",
+    "python-dotenv>=1.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+    "pytest-django>=4.8",
+    "ruff>=0.6",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "config.settings"
+python_files = ["test_*.py"]
+testpaths = ["tests"]
+
+[tool.setuptools.packages.find]
+include = ["config*", "web*", "engine*"]
