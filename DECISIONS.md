@@ -51,3 +51,8 @@ Capital lands on the risk-adjusted-right projects; and the decision — *includi
 - **Downside measure: CVaR (expected shortfall)** at α=5% — the mean of the worst 5% of NPV outcomes — alongside P(NPV<0). CVaR is the tail measure the M4 optimizer penalizes (`expected NPV − λ·downside`); chosen over variance because it speaks to the *bad scenario* directly, which is the whiteboard thesis. Invariant `CVaR ≤ mean` is a test.
 - **Reproducibility:** `run_simulation(seed=…)` builds a `numpy.random.default_rng(seed)`; identical seed → identical draws (tested).
 - **Generic by design:** the engine takes a `build_cashflows(draw)->cashflows` callback so it stays decoupled from project structure (the M5 corpus supplies specs + cashflow builders per project).
+
+### M3 — sensitivity / tornado (recorded as built)
+- **Module:** `engine/sensitivity/tornado.py` — `tornado(specs, build_cashflows, discount_rate, band)` returns one `TornadoBar` per input sorted by NPV swing (largest first). Built test-first (`tests/test_sensitivity.py`, 5 cases).
+- **Method: one-at-a-time across a percentile band.** Hold all inputs at baseline (each distribution's `mean`), swing one input to the band endpoints via its **inverse CDF** (`ppf`), recompute NPV. Default band **P10–P90**. Using `ppf` makes the method uniform across normal/triangular/PERT and sidesteps an unbounded normal's nonexistent min/max — cleaner than "low/high" attributes that only some distributions have.
+- **`swing = |high_npv − low_npv|`** is the ranking key; endpoints are kept (not just the magnitude) so a *negative* relationship (e.g. higher outlay → lower NPV) stays visible in the chart. This is the "what would change my mind / focus on the few inputs that matter" view from the whiteboard's Q2.
