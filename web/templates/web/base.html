@@ -4,32 +4,65 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{% block title %}Capex Decision Engine{% endblock %}</title>
+  <script src="https://unpkg.com/htmx.org@1.9.12"></script>
+  <script src="https://cdn.plot.ly/plotly-2.35.2.min.js" charset="utf-8"></script>
   <style>
-    :root { --ink:#13171f; --muted:#5b6472; --line:#e3e7ee; --accent:#1f6feb; --bg:#f7f9fc; }
+    :root { --ink:#13171f; --muted:#5b6472; --line:#e3e7ee; --accent:#1f6feb;
+            --bg:#f7f9fc; --good:#1f6feb; --bad:#c0392b; --card:#fff; }
     * { box-sizing: border-box; }
-    body { margin:0; font:16px/1.6 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+    body { margin:0; font:15px/1.6 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
            color:var(--ink); background:var(--bg); }
-    header { border-bottom:1px solid var(--line); background:#fff; }
-    .wrap { max-width:880px; margin:0 auto; padding:0 24px; }
-    nav { display:flex; gap:24px; align-items:center; height:60px; }
-    nav .brand { font-weight:700; }
-    nav a { color:var(--muted); text-decoration:none; }
-    nav a.disabled { opacity:.5; cursor:not-allowed; }
-    main { padding:40px 0; }
+    header { border-bottom:1px solid var(--line); background:#fff; position:sticky; top:0; z-index:5; }
+    .wrap { max-width:1040px; margin:0 auto; padding:0 24px; }
+    nav { display:flex; gap:8px; align-items:center; height:58px; }
+    nav .brand { font-weight:700; margin-right:16px; }
+    nav a { color:var(--muted); text-decoration:none; padding:6px 12px; border-radius:7px; }
+    nav a:hover { background:var(--bg); color:var(--ink); }
+    nav a.active { background:var(--ink); color:#fff; }
+    main { padding:32px 0 56px; }
+    h1 { font-size:26px; margin:0 0 6px; }
+    h2 { font-size:18px; margin:28px 0 12px; }
+    .sub { color:var(--muted); margin:0 0 20px; }
+    .card { background:var(--card); border:1px solid var(--line); border-radius:12px;
+            padding:18px; margin-bottom:18px; }
+    table { width:100%; border-collapse:collapse; font-size:14px; }
+    th, td { text-align:right; padding:8px 10px; border-bottom:1px solid var(--line); }
+    th:first-child, td:first-child { text-align:left; }
+    thead th { color:var(--muted); font-weight:600; font-size:12px; text-transform:uppercase;
+               letter-spacing:.03em; }
+    .pill { display:inline-block; padding:1px 9px; border-radius:999px; font-size:12px; font-weight:600; }
+    .pill.funded { background:#e7f0ff; color:var(--good); }
+    .pill.cut { background:#fdeaea; color:var(--bad); }
+    .neg { color:var(--bad); }
+    .grid2 { display:grid; grid-template-columns:1fr 1fr; gap:18px; }
+    @media (max-width:760px){ .grid2 { grid-template-columns:1fr; } }
+    .muted { color:var(--muted); }
+    .controls { display:flex; gap:24px; align-items:center; flex-wrap:wrap; }
+    .controls label { font-size:13px; color:var(--muted); display:block; }
+    input[type=range] { width:280px; accent-color:var(--accent); }
+    button { background:var(--accent); color:#fff; border:0; padding:9px 16px; border-radius:8px;
+             font-size:14px; cursor:pointer; }
+    button:hover { filter:brightness(.95); }
+    .stat { font-variant-numeric:tabular-nums; }
+    .callout { border-left:4px solid var(--bad); background:#fdeaea55; padding:12px 16px; border-radius:8px; }
+    textarea { width:100%; border:1px solid var(--line); border-radius:8px; padding:10px;
+               font:14px/1.5 system-ui; resize:vertical; }
+    .htmx-indicator { opacity:0; transition:opacity .2s; }
+    .htmx-request .htmx-indicator { opacity:1; }
     footer { border-top:1px solid var(--line); color:var(--muted); font-size:13px;
              padding:24px 0; background:#fff; }
     .disclaimer { font-style:italic; }
   </style>
 </head>
-<body>
+<body hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
   <header>
     <div class="wrap">
       <nav>
         <span class="brand">Capex Decision Engine</span>
-        <a href="{% url 'web:home' %}">Home</a>
-        <a class="disabled" title="Coming soon">Projects</a>
-        <a class="disabled" title="Coming soon">Risk</a>
-        <a class="disabled" title="Coming soon">Portfolio</a>
+        <a href="{% url 'web:home' %}" class="{% if active == 'home' %}active{% endif %}">Home</a>
+        <a href="{% url 'web:projects' %}" class="{% if active == 'projects' %}active{% endif %}">Projects</a>
+        <a href="{% url 'web:risk' %}" class="{% if active == 'risk' %}active{% endif %}">Risk</a>
+        <a href="{% url 'web:portfolio' %}" class="{% if active == 'portfolio' %}active{% endif %}">Portfolio</a>
       </nav>
     </div>
   </header>

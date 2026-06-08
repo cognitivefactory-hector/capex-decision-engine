@@ -1,0 +1,32 @@
+{% extends "web/base.html" %}
+
+{% block content %}
+  <h1>Portfolio</h1>
+  <p class="sub">The optimizer picks the funded set under the budget cap to maximize
+    <strong>expected NPV &minus; &lambda;&middot;downside</strong>. Move the budget or the risk-aversion
+    &lambda; and watch the funding change &mdash; at higher &lambda; the high-NPV trap gets cut.</p>
+
+  <div class="card">
+    <div class="controls">
+      <div>
+        <label>Budget cap: <strong id="budget-val" class="stat">{{ budget|floatformat:0 }}</strong></label>
+        <input type="range" name="budget" min="{{ budget_min }}" max="{{ budget_max }}" step="50"
+               value="{{ budget|floatformat:0 }}"
+               hx-get="{% url 'web:optimize' %}" hx-target="#portfolio-result"
+               hx-trigger="input changed delay:150ms" hx-include="[name='lam']"
+               oninput="document.getElementById('budget-val').textContent=this.value">
+      </div>
+      <div>
+        <label>Risk-aversion &lambda;: <strong id="lam-val" class="stat">{{ lam }}</strong></label>
+        <input type="range" name="lam" min="0" max="2" step="0.25" value="{{ lam }}"
+               hx-get="{% url 'web:optimize' %}" hx-target="#portfolio-result"
+               hx-trigger="input changed delay:150ms" hx-include="[name='budget']"
+               oninput="document.getElementById('lam-val').textContent=this.value">
+      </div>
+    </div>
+  </div>
+
+  <div id="portfolio-result">
+    {% include "web/_portfolio_result.html" %}
+  </div>
+{% endblock %}

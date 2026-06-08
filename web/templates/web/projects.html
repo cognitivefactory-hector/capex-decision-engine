@@ -1,0 +1,38 @@
+{% extends "web/base.html" %}
+
+{% block content %}
+  <h1>Projects</h1>
+  <p class="sub">Candidate capital projects with deterministic metrics at the mean of each
+    uncertain input. A point NPV hides the risk &mdash; see the <a href="{% url 'web:risk' %}">Risk</a>
+    tab for the distributions.</p>
+
+  <div class="card">
+    <table>
+      <thead>
+        <tr>
+          <th>Project</th><th>Capital</th><th>NPV</th><th>IRR</th><th>Payback</th>
+          <th>PI</th><th>MIRR</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for r in rows %}
+        <tr>
+          <td>
+            <strong>{{ r.name }}</strong><br>
+            <span class="muted">{{ r.kind }} &middot; {{ r.horizon }} yr</span>
+          </td>
+          <td class="stat">{{ r.capital|floatformat:0 }}</td>
+          <td class="stat {% if r.metrics.npv < 0 %}neg{% endif %}">{{ r.metrics.npv|floatformat:0 }}</td>
+          <td class="stat">{% if r.metrics.irr %}{{ r.metrics.irr|floatformat:3 }}{% else %}&mdash;{% endif %}</td>
+          <td class="stat">{% if r.metrics.payback %}{{ r.metrics.payback|floatformat:1 }} yr{% else %}&mdash;{% endif %}</td>
+          <td class="stat">{{ r.metrics.pi|floatformat:2 }}</td>
+          <td class="stat">{% if r.metrics.mirr %}{{ r.metrics.mirr|floatformat:3 }}{% else %}&mdash;{% endif %}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <p class="muted">IRR shows &mdash; when a stream has no single real internal rate (MIRR is the
+    robust alternative). Every input carries an uncertainty range; the Monte Carlo on the Risk tab
+    turns these points into distributions.</p>
+{% endblock %}

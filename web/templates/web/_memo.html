@@ -1,0 +1,23 @@
+{% if unavailable %}
+  <div class="callout" style="border-left-color:var(--muted)">
+    Memo generation needs an <code>ANTHROPIC_API_KEY</code>. The decision above stands on the numbers
+    without it &mdash; the memo only explains the decision in prose.
+  </div>
+{% elif error %}
+  <div class="callout">Could not generate the memo: {{ error }}</div>
+{% elif memo %}
+  <p class="muted">Draft &mdash; edit before signing. Generated from the computed numbers; the model
+    did not choose the portfolio.</p>
+  <p><strong>Summary</strong></p>
+  <textarea rows="3">{{ memo.summary }}</textarea>
+  <p style="margin-top:12px"><strong>Why we funded what we funded</strong></p>
+  <textarea rows="4">{{ memo.funded_rationale }}</textarea>
+  <p style="margin-top:12px"><strong>Why we cut what we cut</strong></p>
+  <textarea rows="4">{{ memo.cut_rationale }}</textarea>
+  <p style="margin-top:12px"><strong>Risk posture</strong></p>
+  <textarea rows="3">{{ memo.risk_note }}</textarea>
+  <p style="margin-top:14px" class="muted">
+    Signed by <input type="text" placeholder="your name" style="border:1px solid var(--line);
+    border-radius:6px; padding:6px 10px;"> &mdash; the analyst signs; the model never decides.
+  </p>
+{% endif %}
